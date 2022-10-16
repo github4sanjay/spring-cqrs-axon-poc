@@ -1,0 +1,70 @@
+server.port: 8083
+spring:
+  application.name: messaging
+  sleuth:
+    baggage:
+      remote-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+      correlation-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+
+  datasource:
+    url: jdbc:h2:file:~/data/messagingDB
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate.ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      port: 9083
+  redis:
+    redisson:
+      file: classpath:redisson.yaml
+      config: |
+        singleServerConfig:
+          clientName: order
+          address: "redis://localhost:6379"
+        codec: !<org.redisson.codec.JsonJacksonCodec> {}    
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    tags:
+      Application: messaging
+      Environment: dev
+    export:
+      cloudwatch:
+        enabled: false
+    enable:
+      jvm: false
+      process: false
+      system: false
+      tomcat: false
+      http: false
+      application: false
+      disk: false
+      executor: false
+      logback: false
+
+axon:
+  metrics:
+    auto-configuration:
+      enabled: true
+    micrometer:
+      dimensional: true
+
+app:
+  mode: "outbox"

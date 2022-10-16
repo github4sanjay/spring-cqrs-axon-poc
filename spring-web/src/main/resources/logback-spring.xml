@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+    <springProperty scope="context" name="awsRegion" source="aws.region"/>
+    <springProperty scope="context" name="secretKey" source="aws.secret-key"/>
+    <springProperty scope="context" name="accessKey" source="aws.access-key"/>
+    <springProperty scope="context" name="logGroup" source="aws.log-group"/>
+    <springProperty scope="context" name="cloudEnabled" source="spring.cloud.kubernetes.enabled"/>
+    <property name="LOG_FILE" value="logs/application.log"/>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d [%thread] %level [${appName},%X{traceId:-},%X{spanId:-},%X{X-AUTHORIZATION-ID:-},%X{X-DEVICE-ID:-}] %logger{50} - %m%n"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+
+    <appender name="CLOUDWATCH" class="com.j256.cloudwatchlogbackappender.CloudWatchAppender">
+        <region>${awsRegion}</region>
+        <logGroup>${logGroup}</logGroup>
+        <logStream>${appName}-%instance-%date{yyyyMMdd,UTC}-%uuid</logStream>
+        <printRejectedEvents>true</printRejectedEvents>
+        <layout class="com.example.spring.web.CustomJsonLayout">
+            <jsonFormatter
+                    class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+                <prettyPrint>false</prettyPrint>
+            </jsonFormatter>
+            <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+            <appendLineSeparator>true</appendLineSeparator>
+        </layout>
+    </appender>
+
+    <logger name="com.amazonaws.util.EC2MetadataUtils" level="error" />
+    <logger name="com.amazonaws.internal.InstanceMetadataServiceResourceFetcher" level="error" />
+    <root level="INFO">
+        <if condition='"true".equals(property("cloudEnabled"))'>
+            <then>
+                <appender-ref ref="CLOUDWATCH" />
+                <appender-ref ref="console"/>
+            </then>
+            <else>
+                <appender-ref ref="console"/>
+            </else>
+        </if>
+    </root>
+
+</configuration>

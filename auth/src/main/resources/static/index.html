@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Auth API Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans:300,400,700|Nunito+Sans:300,400,700|Fira+Mono:400"
+          rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 14px;
+            color: #505A6F;
+        }
+
+        .menu-content::before {
+            content: url('data:image/png;base64,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');
+            background: #ffff;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+<div id="redoc"></div>
+<script>
+    Redoc.init("/v3/api-docs", {
+        showConsole: true,
+        hideHostname: true,
+        sortPropsAlphabetically: true,
+        theme: {
+            colors: {
+                gray: {100: '#f6f5f5'},
+            },
+            rightPanel: {backgroundColor: "#505A6F"},
+            typography: {
+                fontFamily: 'Nunito Sans, Arial, sans-serif',
+                headings: {
+                    fontFamily: 'Noto Sans, Arial, sans-serif',
+                },
+                code: {
+                    fontFamily: "Fira Mono, monospace"
+                }
+            },
+        },
+    }, document.getElementById("redoc"), null);
+</script>
+</body>
+</html>

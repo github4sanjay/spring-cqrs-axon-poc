@@ -1,0 +1,52 @@
+server.port: 8084
+spring:
+  application.name: otp
+  sleuth:
+    baggage:
+      remote-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+      correlation-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+  redis:
+    redisson:
+      file: classpath:redisson.yaml
+      config: |
+        singleServerConfig:
+          clientName: order
+          address: "redis://localhost:6379"
+        codec: !<org.redisson.codec.JsonJacksonCodec> {}    
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    tags:
+      Application: otp
+      Environment: dev
+    export:
+      cloudwatch:
+        enabled: false
+    enable:
+      jvm: false
+      process: false
+      system: false
+      tomcat: false
+      http: false
+      application: false
+      disk: false
+      executor: false
+      logback: false
+
+axon:
+  metrics:
+    auto-configuration:
+      enabled: true
+    micrometer:
+      dimensional: true

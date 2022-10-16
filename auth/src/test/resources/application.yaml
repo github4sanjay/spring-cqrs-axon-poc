@@ -1,0 +1,116 @@
+server.port: 8082
+spring:
+  application.name: auth
+  sleuth:
+    baggage:
+      remote-fields:
+        - X-AUTHORIZATION-ID
+      correlation-fields:
+        - X-AUTHORIZATION-ID
+
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate.ddl-auto: update
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      port: 9082
+  thymeleaf:
+    check-template-location: true
+    prefix: classpath:/mail/template/
+    suffix: ".html"
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+    check-template: true
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+auth:
+  jwks:
+    key-rotation-period: PT15m
+    cool-down-period: PT5m
+    issuer: auth
+  client-config:
+    web-app:
+      zone-id: "Asia/Singapore"
+      account:
+        enabled: true
+      jwt:
+        access-token-expiry: PT20m
+        refresh-token-expiry:
+          mfa: PT30m
+          pwd: PT30m
+          bio: PT30m
+          net: P3d
+          otp: PT10m
+        refresh-chain-expiry: P10d
+      device-trust:
+        max-device-count: 10
+      alerts:
+        new-device-detected:
+          email:
+            template: "web-app/new-device-detected"
+            from: "Example <no-reply@example.com>"
+            subject: "New Device Detected"
+          sms: |-
+            Alert: Your OnePass account was logged in to from {0} on {1}.
+
+            If this was not you, please secure your account by changing your password: example.com/resetpassword
+        trusted-device-added:
+          email:
+            template: "web-app/trusted-device-added"
+            from: "Example <no-reply@example.com>"
+            subject: "Trusted Device Added"
+          sms: |-
+            Alert: A new Trusted Device, {0}, was added on {1}.
+
+            If this was not done by you, please secure your account by changing your password: example.com/resetpassword
+        mobile-number-added:
+          email:
+            template: "web-app/mobile-number-added"
+            from: "Example <no-reply@example.com>"
+            subject: "Mobile Number Added"
+          sms: |-
+            Alert: A new mobile number ending with {0} has been added to your OnePass account on {1}.
+
+            If this was not done by you, please secure your accounts by changing your password:  example.com/onepass
+      factors:
+        expiry: PT3m
+        resend-after: PT10s
+        max-allowed-otp: 5
+        duration-for-max-allowed-otp: PT120s
+        max-attempt-for-verification: 5
+        reference: "factor"
+        email:
+          template: "web-app/email-factor-challenge"
+          from: "Example <no-reply@example.com>"
+          subject: "Account verification"
+        sms:
+          template: |-
+            Hi, Your webapp code is {code}.
+        totp:
+          password: password
+          salt: salt
+    another-app:
+      account:
+        enabled: false
+
+app:
+  request-verification:
+    enabled: false

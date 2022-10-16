@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.example.spring.axon.reactor.SpringReactorAutoConfiguration, com.example.spring.axon.reactor.AxonConfig

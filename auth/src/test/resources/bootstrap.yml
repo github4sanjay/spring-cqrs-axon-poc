@@ -1,0 +1,11 @@
+spring:
+  application.name: auth
+  cloud:
+    kubernetes:
+      enabled: false
+    consul:
+      enabled: false
+
+aws:
+  secretsmanager:
+    enabled: false

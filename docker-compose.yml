@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  axonserver:
+    image: axoniq/axonserver:latest
+    hostname: axonserver
+    environment:
+      - AXONSERVER_HOSTNAME=axonserver
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+
+  consul:
+    image: hashicorp/consul
+    container_name: consul-server1
+    restart: always
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+
+  redis:
+    image: bitnami/redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'

@@ -1,0 +1,26 @@
+server.port: 8084
+spring:
+  application.name: otp
+  sleuth:
+    baggage:
+      remote-fields:
+        - X-AUTHORIZATION-ID
+      correlation-fields:
+        - X-AUTHORIZATION-ID
+  redis:
+    redisson:
+      file: classpath:redisson.yaml
+      config: |
+        singleServerConfig:
+          clientName: order
+          address: "redis://localhost:6381"
+        codec: !<org.redisson.codec.JsonJacksonCodec> {}    
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS

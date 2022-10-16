@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.example.spring.web.GlobalErrorHandler,com.example.spring.web.SpringContext
+org.springframework.cloud.bootstrap.BootstrapConfiguration=com.example.spring.web.BootstrapConfig

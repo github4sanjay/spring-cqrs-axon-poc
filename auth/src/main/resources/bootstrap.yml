@@ -1,0 +1,22 @@
+spring:
+  application.name: auth
+  cloud:
+    kubernetes:
+      enabled: false
+    consul:
+      enabled: true
+
+aws:
+  secretsmanager:
+    enabled: true
+    prefix: /example/${spring.profiles.active:dev}
+    defaultContext: ${spring.application.name}
+
+---
+spring:
+  config.activate.on-profile: dev,test,prod
+  cloud:
+    kubernetes:
+      enabled: true
+    consul:
+      enabled: false

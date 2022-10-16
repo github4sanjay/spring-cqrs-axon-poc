@@ -1,0 +1,98 @@
+spring:
+  application:
+    name: gateway
+  sleuth:
+    reactor:
+      instrumentation-type: DECORATE_ON_EACH
+    baggage:
+      remote-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+      correlation-fields:
+        - X-AUTHORIZATION-ID
+        - X-DEVICE-ID
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: oauth-server
+          uri: lb://auth
+          predicates:
+            - Path=/.well-known/jwks.json
+        - id: unauthenticated-auth
+          uri: lb://auth
+          predicates:
+            - Path=/api/v1/devices,/api/v1/token,/api/v1/token/refresh,/api/v1/account
+            - Method=POST
+        - id: get-device
+          uri: lb://auth
+          predicates:
+            - Path=/api/v1/devices
+            - Method=GET,PUT
+          filters:
+            - AddAuthHeaderGatewayFilter
+        - id: trust-device
+          uri: lb://auth
+          predicates:
+            - Path=/api/v1/devices/trust,/api/v1/devices/{deviceId}/trust
+          filters:
+            - AddAuthHeaderGatewayFilter
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/.well-known/jwks.json
+
+logging:
+  level:
+    org.springframework.cloud.gateway: info
+    org.springframework.cloud.loadbalancer: info
+  pattern:
+    level: "%5p [${spring.zipkin.service.name:${spring.application.name:-}},%X{traceId:-},%X{spanId:-},%X{X-AUTHORIZATION-ID:-}]"
+
+springdoc:
+  api-filter: unknown
+  apply-filter: false
+  server-url: http://localhost:8080
+
+app:
+  mfa:
+    apis:
+      -
+        method-types: POST
+        uri: /withdraw
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    tags:
+      Application: gateway
+      Environment: dev
+    export:
+      cloudwatch:
+        enabled: false
+    enable:
+      jvm: false
+      process: false
+      system: false
+      tomcat: false
+      http: false
+      application: false
+      disk: false
+      executor: false
+      logback: false
+
+cloud:
+  aws:
+    region:
+      static: ap-southeast-1
+      auto: false
+    stack.auto: false
